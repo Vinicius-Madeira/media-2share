@@ -1,27 +1,37 @@
 {
   "expo": {
-    "name": "media-2share",
-    "slug": "media-2share",
+    "name": "Media 2Share",
+    "slug": "Media 2Share",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/media-2share.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/media-2share.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#232323"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "splash": {
+        "image": "./assets/media-2share.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#232323"
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/media-2share.png",
+        "backgroundColor": "#232323"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.vgmister.media2share"
+      "package": "com.vgmister.media2share",
+      "splash": {
+        "image": "./assets/media-2share.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#232323"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"

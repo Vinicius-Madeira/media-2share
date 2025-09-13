@@ -1,11 +1,21 @@
 package main
 
 import (
+	"net/http"
 	"vinimad.com/media2share/logger"
+	"vinimad.com/media2share/websocket"
 )
 
-func main() {
-	var sugar = logger.GetLogger()
+var sugar = logger.GetLogger()
 
-	sugar.Infow("Hello World", "Logger", "hey")
+func main() {
+	sugar.Infow("Starting websocket server")
+
+	http.HandleFunc("/ws", websocket.HandleWebSocket)
+
+	sugar.Infow("Websocket server started")
+
+	if err := http.ListenAndServe(":8080", nil); err != nil {
+		sugar.Fatalf("Error starting server: %s", err)
+	}
 }

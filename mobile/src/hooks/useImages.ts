@@ -8,6 +8,8 @@ export function useImages() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: false,
+      allowsMultipleSelection: true,
+      selectionLimit: 3,
       aspect: [4, 3],
       quality: 1,
     });

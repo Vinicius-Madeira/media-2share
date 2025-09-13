@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import { Button, StyleSheet, Text, View } from "react-native";
 import { useImages } from "./hooks/useImages";
 import ImagePreview from "./components/ImagePreview";
@@ -10,7 +9,6 @@ export default function App() {
     <View style={styles.container}>
       <Text>Open up App.tsx to start working on your app!</Text>
       <Text>Hello World</Text>
-      <StatusBar style="auto" />
       <Button title="Pick an image from your galery" onPress={pickImages} />
       {images && <ImagePreview uri={images[0]} />}
     </View>

@@ -1,7 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"vinimad.com/media2share/logger"
+)
 
 func main() {
-	fmt.Println("Hello, World!")
+	var sugar = logger.GetLogger()
+
+	sugar.Infow("Hello World", "Logger", "hey")
 }

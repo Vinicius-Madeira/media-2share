@@ -2,10 +2,16 @@ package websocket
 
 import (
 	"encoding/json"
-	"github.com/gorilla/websocket"
+	"log/slog"
 	"sync"
 	"time"
+
+	"github.com/gorilla/websocket"
 )
+
+type Messenger interface {
+	SendMessage(msgType string, payload interface{})
+}
 
 // Client represents a single WebSocket connection
 type Client struct {
@@ -39,7 +45,7 @@ func (c *Client) readPump() {
 		_, message, err := c.conn.ReadMessage()
 		if err != nil {
 			if websocket.IsUnexpectedCloseError(err, websocket.CloseGoingAway, websocket.CloseAbnormalClosure) {
-				sugar.Errorw("Unexpected close error", "error", err)
+				logger.Error("Unexpected close error", "error", err)
 			}
 			break
 		}
@@ -47,7 +53,7 @@ func (c *Client) readPump() {
 		// handles incoming message
 		var msg Message
 		if err := json.Unmarshal(message, &msg); err != nil {
-			sugar.Errorw("Error unmarshaling message", "error", err)
+			logger.Error("Error unmarshaling message", "error", err)
 			continue
 		}
 
@@ -75,17 +81,17 @@ func (c *Client) writePump() {
 
 			w, err := c.conn.NextWriter(websocket.TextMessage)
 			if err != nil {
-				sugar.Errorw("Error getting next writer", "error", err)
+				logger.Error("Error getting next writer", "error", err)
 				return
 			}
 
 			if _, err := w.Write(message); err != nil {
-				sugar.Errorw("Error writing message", "error", err)
+				logger.Error("Error writing message", "error", err)
 				return
 			}
 
 			if err := w.Close(); err != nil {
-				sugar.Errorw("Error closing writer", "error", err)
+				logger.Error("Error closing writer", "error", err)
 				return
 			}
 
@@ -100,7 +106,7 @@ func (c *Client) writePump() {
 
 // handleMessage processes different types of messages
 func (c *Client) handleMessage(msg Message) {
-	sugar.Infow("Message received", "type", msg.Type, "payload", msg.Payload)
+	logger.Debug("Message received", "type", msg.Type, "payload", msg.Payload)
 
 	// Handle different message types
 	switch msg.Type {
@@ -109,7 +115,7 @@ func (c *Client) handleMessage(msg Message) {
 	case "chat":
 		c.SendMessage("message", msg.Payload)
 	default:
-		sugar.Warnw("Unknown message type", "type", msg.Type)
+		logger.Warn("Unknown message type", "type", msg.Type)
 	}
 }
 
@@ -122,7 +128,7 @@ func (c *Client) SendMessage(msgType string, payload interface{}) {
 
 	data, err := json.Marshal(msg)
 	if err != nil {
-		sugar.Errorw("Error marshaling message", "error", err)
+		logger.Error("Error marshaling message", "error", err)
 		return
 	}
 
@@ -132,6 +138,12 @@ func (c *Client) SendMessage(msgType string, payload interface{}) {
 	select {
 	case c.send <- data:
 	default:
-		sugar.Warnw("Client send buffer full")
+		logger.Warn("Client send buffer full")
 	}
+}
+
+func (c *Client) LogValue() slog.Value {
+	return slog.GroupValue(
+		slog.String("RemoteAddr", c.conn.RemoteAddr().String()),
+	)
 }

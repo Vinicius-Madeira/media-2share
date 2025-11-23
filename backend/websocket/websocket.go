@@ -1,10 +1,11 @@
 package websocket
 
 import (
-	"github.com/gorilla/websocket"
 	"net/http"
 	"time"
-	"vinimad.com/media2share/logger"
+
+	"github.com/gorilla/websocket"
+	"vinimad.com/media2share/logging"
 )
 
 // WebSocket connection configuration
@@ -16,7 +17,7 @@ const (
 )
 
 // Logger instance
-var sugar = logger.GetLogger()
+var logger = logging.NewLogger("WebSocket")
 
 // Websocket connection upgrader
 var upgrader = websocket.Upgrader{
@@ -27,16 +28,22 @@ var upgrader = websocket.Upgrader{
 	},
 }
 
+// Clients Current available clients connections
+var Clients []*Client
+
 // HandleWebSocket handles the WebSocket connection
 func HandleWebSocket(w http.ResponseWriter, r *http.Request) {
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		sugar.Errorw("Error upgrading connection", "error", err)
+		logger.Error("Error upgrading connection", "error", err)
 		return
 	}
 
 	client := NewClient(conn)
-	sugar.Infow("New WebSocket connection established")
+	logger.Info("New WebSocket connection established")
+	logger.Debug("Client info", "client", client)
+
+	Clients = append(Clients, client)
 
 	// Start the read and write pumps
 	go client.writePump()
